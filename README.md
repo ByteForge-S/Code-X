@@ -1,4 +1,4 @@
-# Code
+# Code-X
 import React, { useState, useEffect } from "react"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button"; import { Moon, Sun, Flame, Heart, Coins } from "lucide-react"; import { motion } from "framer-motion";
 
 const lessons = [ "Introduction to Python", "Variables & Data Types", "Control Structures", "Functions", "Loops", "Projects" ];
