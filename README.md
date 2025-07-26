@@ -1,55 +1,49 @@
 # Code-X
-// Code X Web App - MVP v2 with Rewards and Login Placeholder import React, { useState } from 'react'; import { Card, CardContent } from '@/components/ui/card'; import { Button } from '@/components/ui/button'; import { Switch } from '@/components/ui/switch'; import { Input } from '@/components/ui/input'; import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react"; import { Card, CardContent } from "@/components/ui/card"; import { Button } from "@/components/ui/button"; import { Moon, Sun, Flame, Heart, Coins } from "lucide-react"; import { motion } from "framer-motion";
 
-export default function CodeXApp() { const [darkMode, setDarkMode] = useState(true); const [hearts, setHearts] = useState(6); const [coins, setCoins] = useState(50); const [lesson, setLesson] = useState(1); const [streak, setStreak] = useState(3); const [rewardClaimed, setRewardClaimed] = useState(false);
+const lessons = [ "Introduction to Python", "Variables & Data Types", "Control Structures", "Functions", "Loops", "Projects" ];
 
-const skipLesson = () => { if (hearts > 0) { setHearts(hearts - 1); setLesson(lesson + 1); } else { alert("You're out of hearts! Buy more or wait for refill."); } };
+export default function CodeXApp() { const [darkMode, setDarkMode] = useState(true); const [hearts, setHearts] = useState(6); const [coins, setCoins] = useState(50); const [completedLessons, setCompletedLessons] = useState([]); const [streak, setStreak] = useState(1);
 
-const completeLesson = () => { setLesson(lesson + 1); setStreak(streak + 1); };
+useEffect(() => { document.body.className = darkMode ? "bg-black text-white" : "bg-white text-black"; }, [darkMode]);
 
-const purchaseHeart = () => { if (coins >= 5) { setCoins(coins - 5); setHearts(hearts + 1); } else { alert("Not enough coins!"); } };
+const handleLessonAction = (lesson, action) => { if (action === "skip") { if (hearts > 0) setHearts(hearts - 1); } else if (action === "complete") { if (!completedLessons.includes(lesson)) { setCompletedLessons([...completedLessons, lesson]); setCoins(coins + 5); } } };
 
-const claimDailyReward = () => { if (!rewardClaimed) { setCoins(coins + 10); setRewardClaimed(true); } else { alert("Reward already claimed today!"); } };
+const buyHeart = () => { if (coins >= 10 && hearts < 6) { setCoins(coins - 10); setHearts(hearts + 1); } };
 
-return ( <div className={darkMode ? 'bg-black text-gold min-h-screen p-4' : 'bg-white text-black min-h-screen p-4'}> <div className="flex justify-between items-center mb-4"> <h1 className="text-3xl font-bold">Code X</h1> <div className="flex items-center space-x-2"> <span>Dark Mode</span> <Switch checked={darkMode} onCheckedChange={setDarkMode} /> </div> </div>
+return ( <div className="min-h-screen p-4 space-y-4"> <div className="flex justify-between items-center"> <h1 className="text-2xl font-bold">Code X</h1> <Button variant="ghost" onClick={() => setDarkMode(!darkMode)}> {darkMode ? <Sun size={20} /> : <Moon size={20} />} </Button> </div>
 
-{/* Placeholder for future login form */}
-  {/* <Input placeholder="Email" /><Input placeholder="Password" type="password" /><Button>Login</Button> */}
+<div className="flex gap-4 items-center">
+    <div className="flex items-center gap-1">
+      <Heart className="text-red-500" /> {hearts}
+    </div>
+    <div className="flex items-center gap-1">
+      <Coins className="text-yellow-400" /> {coins}
+    </div>
+    <div className="flex items-center gap-1">
+      <Flame className="text-orange-500" /> Streak: {streak}
+    </div>
+  </div>
 
-  <Card className="mb-4">
-    <CardContent>
-      <h2 className="text-xl font-semibold">Lesson {lesson}</h2>
-      <p>Complete your Python lesson for today.</p>
-      <div className="mt-2 space-x-2">
-        <Button onClick={completeLesson}>Complete</Button>
-        <Button variant="destructive" onClick={skipLesson}>Skip (-1 ❤️)</Button>
-      </div>
-    </CardContent>
-  </Card>
+  <div className="grid gap-4">
+    {lessons.map((lesson) => (
+      <Card key={lesson} className="shadow-xl">
+        <CardContent className="flex justify-between items-center p-4">
+          <div>{lesson}</div>
+          <div className="flex gap-2">
+            <Button onClick={() => handleLessonAction(lesson, "complete")}>
+              Complete
+            </Button>
+            <Button variant="destructive" onClick={() => handleLessonAction(lesson, "skip")}>Skip</Button>
+          </div>
+        </CardContent>
+      </Card>
+    ))}
+  </div>
 
-  <Card className="mb-4">
-    <CardContent className="flex justify-between flex-col gap-2">
-      <div>❤️ Hearts: {hearts}</div>
-      <div>🪙 Coins: {coins}</div>
-      <Button onClick={purchaseHeart}>Buy 1 ❤️ (5 coins)</Button>
-    </CardContent>
-  </Card>
-
-  <Card className="mb-4">
-    <CardContent>
-      <h3 className="text-lg font-semibold">🔥 Streak: {streak} days</h3>
-      <p>Keep your streak alive for bonus rewards!</p>
-      <Button onClick={claimDailyReward}>Claim Daily Reward (+10 coins)</Button>
-    </CardContent>
-  </Card>
-
-  <Card>
-    <CardContent>
-      <h3 className="text-lg font-semibold">🚀 Premium Lessons</h3>
-      <p>These lessons require 20 coins to unlock.</p>
-      <Button disabled={coins < 20}>Unlock Premium (20 coins)</Button>
-    </CardContent>
-  </Card>
+  <div className="mt-4 text-center">
+    <Button onClick={buyHeart}>Buy Heart (10 Coins)</Button>
+  </div>
 </div>
 
 ); }
